@@ -45,3 +45,22 @@ export async function createProject(input: NewProjectInput): Promise<Project> {
 
   return data as Project;
 }
+
+export async function deleteProject(projectId: number): Promise<void> {
+  const response = await fetch(`${PROJECTS_API_URL}/${projectId}`, {
+    method: "DELETE",
+  });
+
+  if (response.status === 204) {
+    return;
+  }
+
+  const data: unknown = await response.json();
+  const fallback = `Failed to delete project: ${response.status}`;
+
+  if (data && typeof data === "object" && "message" in data && typeof data.message === "string") {
+    throw new Error(data.message);
+  }
+
+  throw new Error(fallback);
+}

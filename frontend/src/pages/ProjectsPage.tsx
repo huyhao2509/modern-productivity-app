@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { createProject, fetchProjects } from "../services/projectApi";
-import type { Project } from "../types/project";
+import { useProjects } from "../hooks/useProjects";
+import ProjectCard from "../components/projects/ProjectCard";
+import ProjectForm from "../components/projects/ProjectForm";
 import "./ProjectsPage.css";
 
 const PROJECT_TONES = ["mint", "sun", "ocean"] as const;
@@ -11,56 +11,19 @@ function getProjectTone(id: number): (typeof PROJECT_TONES)[number] {
 }
 
 function ProjectsPage() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [creating, setCreating] = useState(false);
-
-  useEffect(() => {
-    async function loadProjects() {
-      try {
-        const projectList = await fetchProjects();
-        setProjects(projectList);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : "Unknown error";
-        setError(message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    void loadProjects();
-  }, []);
-
-  async function handleCreateProject(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (!name.trim() || !description.trim()) {
-      setError("Name and description are required");
-      return;
-    }
-
-    try {
-      setCreating(true);
-      setError(null);
-
-      const newProject = await createProject({
-        name: name.trim(),
-        description: description.trim(),
-      });
-
-      setProjects((current) => [...current, newProject]);
-      setName("");
-      setDescription("");
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      setError(message);
-    } finally {
-      setCreating(false);
-    }
-  }
+  const {
+    projects,
+    loading,
+    error,
+    name,
+    description,
+    creating,
+    deletingId,
+    setName,
+    setDescription,
+    createCurrentProject,
+    removeProjectById,
+  } = useProjects();
 
   return (
     <main className="projects-page">
@@ -72,36 +35,14 @@ function ProjectsPage() {
         </p>
       </header>
 
-      <section className="project-form-section" aria-label="Create project">
-        <h2>Create Project</h2>
-        <form className="project-form" onSubmit={handleCreateProject}>
-          <label className="project-form__field">
-            <span>Name</span>
-            <input
-              type="text"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="Ex: Mobile Planner"
-              disabled={creating}
-            />
-          </label>
-
-          <label className="project-form__field">
-            <span>Description</span>
-            <textarea
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              placeholder="Describe what this project is about"
-              rows={3}
-              disabled={creating}
-            />
-          </label>
-
-          <button type="submit" disabled={creating}>
-            {creating ? "Creating..." : "Create project"}
-          </button>
-        </form>
-      </section>
+      <ProjectForm
+        name={name}
+        description={description}
+        creating={creating}
+        onNameChange={setName}
+        onDescriptionChange={setDescription}
+        onSubmit={createCurrentProject}
+      />
 
       {loading && <p className="projects-page__status">Loading projects...</p>}
 
@@ -117,14 +58,15 @@ function ProjectsPage() {
             const tone = getProjectTone(project.id);
 
             return (
-              <li key={project.id} className={`project-card project-card--${tone}`}>
-                <div className="project-card__head">
-                  <span className="project-card__badge">Project #{project.id}</span>
-                </div>
-
-                <h2>{project.name}</h2>
-                <p>{project.description}</p>
-              </li>
+              <ProjectCard
+                key={project.id}
+                project={project}
+                tone={tone}
+                isDeleting={deletingId === project.id}
+                onDelete={(projectId) => {
+                  void removeProjectById(projectId);
+                }}
+              />
             );
           })}
         </ul>
