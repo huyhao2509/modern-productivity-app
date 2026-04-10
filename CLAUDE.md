@@ -65,6 +65,7 @@ Khi bạn hỗ trợ mình:
 5. Khi thêm tính năng:
    - Làm rõ cần thay đổi ở FE, BE hay cả hai.
    - Đề xuất thay đổi từng bên + test (nếu phù hợp).
+
 ## 5. Cấu trúc mã nguồn mong muốn
 
 - Frontend:
@@ -74,8 +75,10 @@ Khi bạn hỗ trợ mình:
   - Kiểu dữ liệu dùng chung đặt ở `frontend/src/types/`.
 
 - Backend:
-  - Router/API đặt ở `backend/src/routes/`.
-  - Logic xử lý (service) đặt ở `backend/src/services/` nếu cần.
+  - Dùng mô hình MVC.
+  - Router/API đặt ở `backend/src/routes/` và chỉ làm nhiệm vụ định tuyến.
+  - Controller đặt ở `backend/src/controllers/` để nhận request/response.
+  - Logic xử lý đặt ở `backend/src/services/`.
   - Kiểu dữ liệu đặt ở `backend/src/types/`.
 
 ## 6. Cách đề xuất thay đổi
