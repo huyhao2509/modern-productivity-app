@@ -1,10 +1,8 @@
 import { Router } from "express";
-import { tasks } from "../data/tasks";
+import { getTasks } from "../controllers/taskController";
 
 const router = Router();
 
-router.get("/", (_req, res) => {
-  res.json(tasks);
-});
+router.get("/", getTasks);
 
 export default router;

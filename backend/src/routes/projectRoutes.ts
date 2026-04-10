@@ -1,10 +1,9 @@
 import { Router } from "express";
-import { projects } from "../data/projects";
+import { getProjects, postProject } from "../controllers/projectController";
 
 const router = Router();
 
-router.get("/", (_req, res) => {
-  res.json(projects);
-});
+router.get("/", getProjects);
+router.post("/", postProject);
 
 export default router;
