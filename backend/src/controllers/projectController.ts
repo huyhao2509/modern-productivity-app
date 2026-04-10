@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { createProject, getAllProjects } from "../services/projectService";
+import { createProject, deleteProjectById, getAllProjects } from "../services/projectService";
 import type { CreateProjectInput } from "../types/project";
 
 function parseCreateProjectInput(body: unknown): CreateProjectInput {
@@ -36,4 +36,22 @@ export function postProject(req: Request, res: Response): void {
     const message = error instanceof Error ? error.message : "Invalid request body";
     res.status(400).json({ message });
   }
+}
+
+export function removeProject(req: Request, res: Response): void {
+  const projectId = Number(req.params.id);
+
+  if (!Number.isInteger(projectId) || projectId <= 0) {
+    res.status(400).json({ message: "Project id must be a positive integer" });
+    return;
+  }
+
+  const deleted = deleteProjectById(projectId);
+
+  if (!deleted) {
+    res.status(404).json({ message: "Project not found" });
+    return;
+  }
+
+  res.status(204).send();
 }

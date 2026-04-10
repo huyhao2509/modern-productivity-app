@@ -17,3 +17,14 @@ export function createProject(input: CreateProjectInput): Project {
   projects.push(newProject);
   return newProject;
 }
+
+export function deleteProjectById(projectId: number): boolean {
+  const index = projects.findIndex((project) => project.id === projectId);
+
+  if (index === -1) {
+    return false;
+  }
+
+  projects.splice(index, 1);
+  return true;
+}
