@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchProjects } from "../services/projectApi";
+import { createProject, fetchProjects } from "../services/projectApi";
 import type { Project } from "../types/project";
 import "./ProjectsPage.css";
 
@@ -14,6 +14,9 @@ function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     async function loadProjects() {
@@ -31,6 +34,34 @@ function ProjectsPage() {
     void loadProjects();
   }, []);
 
+  async function handleCreateProject(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!name.trim() || !description.trim()) {
+      setError("Name and description are required");
+      return;
+    }
+
+    try {
+      setCreating(true);
+      setError(null);
+
+      const newProject = await createProject({
+        name: name.trim(),
+        description: description.trim(),
+      });
+
+      setProjects((current) => [...current, newProject]);
+      setName("");
+      setDescription("");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      setError(message);
+    } finally {
+      setCreating(false);
+    }
+  }
+
   return (
     <main className="projects-page">
       <header className="projects-page__hero">
@@ -40,6 +71,37 @@ function ProjectsPage() {
           A quick view of active initiatives synced from your backend API.
         </p>
       </header>
+
+      <section className="project-form-section" aria-label="Create project">
+        <h2>Create Project</h2>
+        <form className="project-form" onSubmit={handleCreateProject}>
+          <label className="project-form__field">
+            <span>Name</span>
+            <input
+              type="text"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder="Ex: Mobile Planner"
+              disabled={creating}
+            />
+          </label>
+
+          <label className="project-form__field">
+            <span>Description</span>
+            <textarea
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              placeholder="Describe what this project is about"
+              rows={3}
+              disabled={creating}
+            />
+          </label>
+
+          <button type="submit" disabled={creating}>
+            {creating ? "Creating..." : "Create project"}
+          </button>
+        </form>
+      </section>
 
       {loading && <p className="projects-page__status">Loading projects...</p>}
 
