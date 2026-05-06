@@ -1,30 +1,32 @@
-import { projects } from "../data/projects";
-import type { CreateProjectInput, Project } from "../types/project";
+import { PrismaClient } from "@prisma/client";
+import type { CreateProjectInput } from "../types/project";
 
-export function getAllProjects(): Project[] {
-  return projects;
+const prisma = new PrismaClient();
+
+export async function getAllProjects() {
+  return await prisma.project.findMany();
 }
 
-export function createProject(input: CreateProjectInput): Project {
-  const nextId = Math.max(0, ...projects.map((project) => project.id)) + 1;
-
-  const newProject: Project = {
-    id: nextId,
-    name: input.name,
-    description: input.description,
-  };
-
-  projects.push(newProject);
-  return newProject;
+export async function createProject(input: CreateProjectInput) {
+  return await prisma.project.create({
+    data: {
+      name: input.name,
+      description: input.description,
+    },
+  });
 }
 
-export function deleteProjectById(projectId: number): boolean {
-  const index = projects.findIndex((project) => project.id === projectId);
+export async function getProjectById(id: number) {
+  return await prisma.project.findUnique({ where: { id } });
+}
 
-  if (index === -1) {
-    return false;
-  }
+export async function updateProject(id: number, data: Partial<CreateProjectInput>) {
+  return await prisma.project.update({
+    where: { id },
+    data,
+  });
+}
 
-  projects.splice(index, 1);
-  return true;
+export async function deleteProject(id: number) {
+  return await prisma.project.delete({ where: { id } });
 }
