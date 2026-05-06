@@ -17,11 +17,11 @@ function getProjectTone(id: number): (typeof PROJECT_TONES)[number] {
 
 function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
-    const [editingId, setEditingId] = useState<number | null>(null);
-    const [editError, setEditError] = useState<string | null>(null);
-    const [editLoading, setEditLoading] = useState(false);
-    const [deletingId, setDeletingId] = useState<number | null>(null);
-    const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [editLoading, setEditLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [projectError, setProjectError] = useState<string | null>(null);
   const [name, setName] = useState("");
