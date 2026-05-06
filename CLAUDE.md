@@ -3,6 +3,7 @@
 ## 1. Bối cảnh
 
 - Dự án: Ứng dụng web hiện đại quản lý project/task (dùng để học cách làm việc với AI).
+- Trạng thái hiện tại: đã có thêm tính năng AI Project Planner (gợi ý kế hoạch và task từ mục tiêu dự án).
 - Tech stack:
   - Frontend: React + TypeScript, Vite.
   - Backend: NodeJS + Express + TypeScript.
@@ -37,6 +38,12 @@
   - `npm run build`
 - Chạy bản build:
   - `npm start`
+
+### Biến môi trường AI (tuỳ chọn)
+
+- `OPENAI_API_KEY`: API key để gọi model thật.
+- `OPENAI_MODEL`: model OpenAI muốn dùng (mặc định: `gpt-4.1-mini`).
+- Nếu không có key, backend sẽ tự fallback sang planner rule-based để vẫn demo được.
 
 ## 3. Quy ước TypeScript
 
@@ -81,7 +88,25 @@ Khi bạn hỗ trợ mình:
   - Logic xử lý đặt ở `backend/src/services/`.
   - Kiểu dữ liệu đặt ở `backend/src/types/`.
 
-## 6. Cách đề xuất thay đổi
+## 6. AI feature hiện có trong repo
+
+- Frontend:
+  - UI AI planner nằm ở `frontend/src/pages/ProjectsPage.tsx`.
+  - Gọi API AI qua `frontend/src/services/aiApi.ts`.
+  - Type AI ở `frontend/src/types/ai.ts`.
+
+- Backend:
+  - Route AI ở `backend/src/routes/aiRoutes.ts` và được mount dưới `/api/ai` trong `backend/src/routes/index.ts`.
+  - Controller AI ở `backend/src/controllers/aiController.ts`.
+  - Service AI ở `backend/src/services/aiPlannerService.ts`.
+  - Type AI ở `backend/src/types/ai.ts`.
+
+- Endpoint chính:
+  - `POST /api/ai/project-plan`
+  - Input: `{ goal, projectName?, description? }`
+  - Output: `{ engine, projectName, summary, rationale, suggestions[] }`
+
+## 7. Cách đề xuất thay đổi
 
 - Khi đề xuất sửa code:
   - Chỉ rõ file và nếu được thì kèm số dòng xấp xỉ.
@@ -89,7 +114,7 @@ Khi bạn hỗ trợ mình:
 - Khi tạo file mới:
   - Nói rõ đường dẫn đầy đủ (ví dụ: `backend/src/routes/projectRoutes.ts`).
 
-## 7. Khi không chắc chắn
+## 8. Khi không chắc chắn
 
 - Nếu không chắc về hiện trạng code hoặc API:
   - Hãy nói rõ “không chắc” và gợi ý mình kiểm tra file/đoạn mã cụ thể.
